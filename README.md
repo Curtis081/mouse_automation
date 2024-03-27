@@ -20,7 +20,7 @@ pyinstaller main.py --onefile --name='mouse_click'
 Curtis Hsu(Ying-Hao Hsu)
 
 ### Creation Date
-March 7, 2024
+March 27, 2024
 
 ### Contact Information
 - **Email**: ar06053127hga@hotmail.com.tw
