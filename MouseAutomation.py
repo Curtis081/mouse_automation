@@ -94,6 +94,7 @@ class LoggerConfig:
 class MouseAutomation(Config):
     def __init__(self):
         super().__init__()
+        pyautogui.FAILSAFE = False  # disable FailSafeException
 
     def start(self):
         colorama_init()
