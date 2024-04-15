@@ -133,7 +133,11 @@ class MouseAutomation(Config):
     def perform_clicks(event, x, y, start_time, end_time, delay):
         while not event.is_set():
             if TimeUtils.is_time_in_range(start_time, end_time, datetime.datetime.now().time()):
-                pyautogui.click(x, y)
+                current_x, current_y = pyautogui.position()
+                # Click the mouse at the desired position
+                pyautogui.click(x, y, button='left')
+                # Move the mouse cursor to the original position
+                pyautogui.moveTo(current_x, current_y)
                 print(f"Clicked at: {x}, {y}")
             else:
                 print("Outside allowed click time.")
