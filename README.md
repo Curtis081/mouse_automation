@@ -1,5 +1,5 @@
 ## Introduction(簡介)
-<a href="https://github.com/Curtis081/mouse_automation/tree/master/dist"><img src="https://img.shields.io/badge/.EXE%20file-green.svg?logo=GitHub" alt=".exe file"></a>
+<a href="https://github.com/Curtis081/mouse_automation/releases/download/v1.0.0/mouse_automation.zip"><img src="https://img.shields.io/badge/.EXE%20file-green.svg?logo=GitHub" alt=".exe file"></a>
 <a href="https://www.python.org/"><img src="https://img.shields.io/badge/.Python-white.svg?logo=Python" alt="python icon"></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
 
