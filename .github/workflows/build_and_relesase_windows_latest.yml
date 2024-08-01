@@ -1,4 +1,4 @@
-name: Generate execuable file and upload to GitHub Releases
+name: Generate executable file and upload to GitHub Releases
 
 env:
   SOURCE_FILE_MAIN_NAME: main.py
@@ -20,7 +20,7 @@ permissions:
   issues: write
   pull-requests: write
 
-jobs: 
+jobs:
   build:
     runs-on: windows-latest
     steps:
@@ -44,25 +44,38 @@ jobs:
 
       - name: Build with PyInstaller
         run: pyinstaller -y -c --icon='./icon/app.ico' --name=${{ env.EXECUTEABLE_FILE_NAME }} --clean ${{ env.SOURCE_FILE_MAIN_NAME }}
-      
-      - name: Upolad my artifact
+
+      - name: Upload my artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MY_ARTIFACT_NAME
+          name: ${{ env.MY_ARTIFACT_NAME }}
           path: ${{ env.EXECUABLE_FILES_FOLDER_PATH }}
-  
+
   release:
     name: Release exe folder to GitHub Releases
     runs-on: windows-latest
     needs: build
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Download my artifact
         uses: actions/download-artifact@v4
         with:
-          name: MY_ARTIFACT_NAME
+          name: ${{ env.MY_ARTIFACT_NAME }}
 
-      # - name: Display structure of downloaded files
-      #   run: ls -R
+      - name: Read version number
+        id: read-version
+        run: |
+          if (!(Test-Path -Path .version)) { Set-Content -Path .version -Value '0' }
+          $version = Get-Content -Path .version
+          echo "version=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Increment version number
+        id: increment-version
+        run: |
+          $version = [int](Get-Content -Path .version) + 1
+          echo "version=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Create ZIP archive
         uses: thedoctor0/zip-release@0.7.5
@@ -76,8 +89,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release v${{ github.run_number }}
+          tag_name: v${{ env.version }}
+          release_name: Release v${{ env.version }}
 
       - name: Upload asset to GitHub Release
         id: upload-release-asset
@@ -87,5 +100,20 @@ jobs:
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: ${{ env.EXECUTEABLE_ZIP_FILE_NAME }}.zip
-          asset_name: ${{ env.EXECUTEABLE_ZIP_FILE_NAME }}_v${{ github.run_number }}.zip
+          asset_name: ${{ env.EXECUTEABLE_ZIP_FILE_NAME }}_v${{ env.version }}.zip
           asset_content_type: application/zip
+
+      - name: Update version number
+        if: success()
+        run: |
+          $version = $env:version
+          Set-Content -Path .version -Value $version
+
+      - name: Commit version update
+        if: success()
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .version
+          git commit -m "Increment version number to $version"
+          git push origin HEAD:master

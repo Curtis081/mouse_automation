@@ -31,7 +31,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['icon\\mouse_click_icon.ico'],
+    icon=['icon\\app.ico'],
 )
 coll = COLLECT(
     exe,
